@@ -4,28 +4,104 @@ import lang::java::m3::Core;
 import lang::java::jdt::m3::Core;
 import IO;
 import List;
+import String;
+import demo::common::Crawl;
+
 
 public M3 software;
 public int LOC;
+public int LOCOM;
+public int avgUnitSize;
+
+public loc currentProject = |project://TestProject|;
 
 public void begin() {
-   println("Begin");
+	println("Let\'s begin!");
    
-   Calculate::software = createM3FromEclipseProject(|project://TestProject|);
-   println(Calculate::software@containment[|java+compilationUnit:///C:/Users/Nico/workspace/TestProject/src/Test.java|]);
+	Calculate::software = createM3FromEclipseProject(currentProject);
+     
+	list[loc] allFiles = getAllJavaFiles();
    
-   helloWorldMethods = [ e | e <- Calculate::software@containment[|java+class:///Test|], e.scheme == "java+method"];
+	// Calculate the amount of lines of code for all the java files in the project.
+	Calculate::LOC = sum([ countLOC(m) | m <- allFiles]);
+   	// Calculate the amount of lines of comments for all the java files in the project.
+   	Calculate::LOCOM = sum([ countLOCOM(m) | m <- allFiles]);
    
-   println(helloWorldMethods);
-   println(helloWorldMethods[0]);
-   println(size(helloWorldMethods));
    
-   methodSrc = readFile(helloWorldMethods[0]);
-   print(methodSrc);
+	// Get all classes so we can access all methods.
+   	allClasses = classes(Calculate::software);
+   	
+   	int sum = 0;
+   	int totalMethods = 0;
+   	
+   	// Loop through all classes.
+	for (currentClass <- allClasses) {
+		// Get all methods per class.
+		myMethods = [ e | e <- Calculate::software@containment[currentClass], e.scheme == "java+method"];
+   		
+   		// Calculate the lines of code for every method.
+		for (method <- myMethods) {
+			int currentLoc = countLOC(method);
+			sum += currentLoc;
+			totalMethods+=1;
+		}
+	} 
    
-   print(size(methodSrc));
-   
-   methodAST = getMethodASTEclipse(helloWorldMethods[0], model=Calculate::software);
+   	// Set the average unit size.
+	Calculate::avgUnitSize = sum / totalMethods;
+	
+   printResults();
 }
+
+public void printResults() {
+
+	println("Results:");
+	println();
+
+	println("LOC: ");
+	println(Calculate::LOC);
+	
+	println();
+   
+   	println("LOCOM: ");
+	println(Calculate::LOCOM);
+	
+	println();
+	
+	println("avgUnitSize");
+	println(Calculate::avgUnitSize);
+	
+   
+}
+
+public list[loc] getAllJavaFiles() {
+	return crawl(currentProject, ".java");
+}
+
+public int countLOC(loc location) {
+	int count = 0;
+	
+	for (line <- readFileLines(location)) {
+		if (trim(line) != "") {
+			if (!startsWith(trim(line),"/") && !startsWith(trim(line),"*")) {
+				count += 1;
+			}
+		}
+	}
+	return count;	
+}
+
+public int countLOCOM(loc location) {
+	int count = 0;
+	
+	for (line <- readFileLines(location)) {
+		if (startsWith(trim(line),"/") || startsWith(trim(line),"*")) {
+			count += 1;
+		}
+	}
+	
+	return count;	
+}
+
 
 
