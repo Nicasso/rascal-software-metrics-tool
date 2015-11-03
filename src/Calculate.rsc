@@ -7,7 +7,6 @@ import List;
 import String;
 import demo::common::Crawl;
 
-
 public M3 software;
 public list[loc] allFiles;
 
@@ -77,12 +76,12 @@ public void printResults() {
 	println();
 
 	println("LOC: ");
-	println(Calculate::LOC);
+	println(Calculate::projectLOC);
 	
 	println();
    
    	println("LOCOM: ");
-	println(Calculate::LOCOM);
+	println(Calculate::projectLOCOM);
 	
 	println();
 	
