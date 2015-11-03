@@ -9,9 +9,10 @@ import demo::common::Crawl;
 
 
 public M3 software;
-public int LOC;
-public int LOCOM;
-public int avgUnitSize;
+public list[loc] allFiles;
+
+public int projectLOC;
+public int projectLOCOM;
 
 public loc currentProject = |project://TestProject|;
 
@@ -20,20 +21,33 @@ public void begin() {
    
 	Calculate::software = createM3FromEclipseProject(currentProject);
      
-	list[loc] allFiles = getAllJavaFiles();
+	Calculate::allFiles = getAllJavaFiles();
    
+	calculateVolume();
+	
+	calculateUnitSize();
+	
+	calculateUnitComplexity();
+	
+	calculateDuplication();
+	
+   	printResults();
+}
+
+public void calculateVolume() {
 	// Calculate the amount of lines of code for all the java files in the project.
-	Calculate::LOC = sum([ countLOC(m) | m <- allFiles]);
+	Calculate::projectLOC = sum([ countLOC(m) | m <- allFiles]);
    	// Calculate the amount of lines of comments for all the java files in the project.
-   	Calculate::LOCOM = sum([ countLOCOM(m) | m <- allFiles]);
-   
-   
+   	Calculate::projectLOCOM = sum([ countLOCOM(m) | m <- allFiles]);
+}
+
+public void calculateUnitSize() {
 	// Get all classes so we can access all methods.
    	allClasses = classes(Calculate::software);
    	
-   	int sum = 0;
-   	int totalMethods = 0;
+   	list[int] sum = [];
    	
+   	int i = 0;
    	// Loop through all classes.
 	for (currentClass <- allClasses) {
 		// Get all methods per class.
@@ -42,15 +56,19 @@ public void begin() {
    		// Calculate the lines of code for every method.
 		for (method <- myMethods) {
 			int currentLoc = countLOC(method);
-			sum += currentLoc;
-			totalMethods+=1;
+			sum = sum + [currentLoc];
 		}
 	} 
-   
-   	// Set the average unit size.
-	Calculate::avgUnitSize = sum / totalMethods;
 	
-   printResults();
+	
+}
+
+public void calculateUnitComplexity() {
+
+}
+
+public void calculateDuplication() {
+
 }
 
 public void printResults() {
@@ -68,14 +86,31 @@ public void printResults() {
 	
 	println();
 	
-	println("avgUnitSize");
-	println(Calculate::avgUnitSize);
+	//println("Unit Size");
+	//println(sum);
 	
    
 }
 
 public list[loc] getAllJavaFiles() {
 	return crawl(currentProject, ".java");
+}
+
+public map[str, int] unitSize(list[int] unitSizes) {
+	map[str, int] values;
+	
+	for (currentSize <- unitSizes) {
+		if (currentSize >= 1 && currentSize <= 10) {
+			values
+			println("a");
+		} else if (currentSize >= 11 && currentSize <= 20) {
+			println("a");
+		} else if (currentSize >= 21 && currentSize <= 50) {
+			println("a");
+		} else if (currentSize >= 50) {
+			println("a");
+		}
+	}
 }
 
 public int countLOC(loc location) {
