@@ -49,7 +49,7 @@ public map[str,int] countVolume(list[loc] allLocations) {
 		}
 	
 	}
-	//test
+	
 	calculateVolumeRank(values["code"]);
 	
 	return values;
