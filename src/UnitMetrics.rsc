@@ -232,5 +232,5 @@ public void printResults() {
 	
 	println();
 	
-	println("Unit Size Rating: <UnitMetrics::unitCCScore>");  
+	println("Unit Complexity Rating: <UnitMetrics::unitCCScore>");  
 }
