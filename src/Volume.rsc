@@ -12,6 +12,8 @@ import Relation;
 import util::Math;
 import demo::common::Crawl;
 
+public str volumeRank;
+
 public map[str,int] countVolume(list[loc] allLocations) {
 
 	map[str,int] values = ();
@@ -48,7 +50,23 @@ public map[str,int] countVolume(list[loc] allLocations) {
 	
 	}
 	
+	calculateVolumeRank(values["code"]);
+	
 	return values;
+}
+
+private void calculateVolumeRank(int LOC) {
+	if (0 < LOC && LOC <= 66000) {
+		Volume::volumeRank = "++";
+	} else if (66000 < LOC && LOC <= 246000) {
+		Volume::volumeRank = "+";
+	} else if (246000 < LOC && LOC <= 665000) {
+		Volume::volumeRank = "0";
+	} else if (665000 < LOC && LOC <= 1310000) {
+		Volume::volumeRank = "-";
+	} else {
+		Volume::volumeRank = "--";
+	}
 }
 
 public void printResults(map[str,int] values) {
@@ -58,5 +76,7 @@ public void printResults(map[str,int] values) {
    	println("Lines of comments for the whole project: <values["comment"]>");
    	println("Total amount of blank lines for the whole project: <values["blank"]>");
    	println("Total amount of lines for the whole project: <values["total"]>");
+   	println();	
+	println("Volume Rating: <Volume::volumeRank>");
 	println();
 }
