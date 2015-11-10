@@ -55,14 +55,14 @@ public map[str,int] countVolume(list[loc] allLocations) {
 	return values;
 }
 
-private void calculateVolumeRank(int LOC) {
-	if (0 < LOC && LOC <= 66000) {
+private void calculateVolumeRank(int linesOfCode) {
+	if (0 < linesOfCode && linesOfCode <= 66000) {
 		Volume::volumeRank = "++";
-	} else if (66000 < LOC && LOC <= 246000) {
+	} else if (66000 < linesOfCode && linesOfCode <= 246000) {
 		Volume::volumeRank = "+";
-	} else if (246000 < LOC && LOC <= 665000) {
+	} else if (246000 < linesOfCode && linesOfCode <= 665000) {
 		Volume::volumeRank = "0";
-	} else if (665000 < LOC && LOC <= 1310000) {
+	} else if (665000 < linesOfCode && linesOfCode <= 1310000) {
 		Volume::volumeRank = "-";
 	} else {
 		Volume::volumeRank = "--";
