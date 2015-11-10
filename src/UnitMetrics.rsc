@@ -27,31 +27,48 @@ public int mediumRiskUnitCC;
 public int highRiskUnitCC;
 public int veryHighRiskUnitCC;
 
-public void calculateUnitMetrics(M3 currentSoftware) {
+public void calculateUnitMetrics(rel[loc, Statement] myMethods) {
 	// Get all classes so we can access all methods.
-   	allClasses = classes(currentSoftware);
+   	//allClasses = classes(currentSoftware);
    	   	
    	list[tuple[int,int]] locAndCC = [];
    	
-   	int i = 0;
+   	//int i = 0;
    	// Loop through all classes.
-	for (currentClass <- allClasses) {
+	//for (currentClass <- allClasses) {
 		// Get all methods and constructors per class. @TODO DO WE ALSO NEED TO CALCULATE CONSTRUCTORS?
-		myMethods = [ e | e <- currentSoftware@containment[currentClass], e.scheme == "java+method" || e.scheme == "java+constructor"];
+		//myMethods = [ e | e <- currentSoftware@containment[currentClass], e.scheme == "java+method" || e.scheme == "java+constructor"];
    		
    		// Calculate the lines of code for every method.
 		for (method <- myMethods) {
 			list[loc] tmp = [];
-			tmp = tmp + [method]; 
+			tmp = tmp + [method[0]]; 
 			int currentLoc = countVolume(tmp)["code"];
+			int methodCC = computeCC(method[1]);
 			
-			methodAST = getMethodASTEclipse(method, model = currentSoftware);
+			//methodAST = getMethodASTEclipse(method, model = currentSoftware);
 			
-			int methodCC = 1;
+			
+			
+			locAndCC += <currentLoc, methodCC>;
+			
+			//iprintln("<method> - methodCC: <methodCC>");
+		}
+	//}
+	iprintln(locAndCC);
+	map[str,int] unitSizes = unitSize(locAndCC);
+	calculateUnitSizeRisk(unitSizes);
+	
+	map[str,int] unitCCs = unitCC(locAndCC);
+	calculateUnitCCRisk(unitCCs);
+}
+
+public int computeCC(Statement statement) {
+	int methodCC = 1;
 			
 			//iprintln(methodAST);
 			
-			visit (methodAST) {
+			visit (statement) {
 				case \if(Expression condition, Statement thenBranch): {
 					methodCC += countAndOr(condition);
 				}
@@ -84,18 +101,7 @@ public void calculateUnitMetrics(M3 currentSoftware) {
 					methodCC += 1;
 				}
 			};
-			
-			locAndCC += <currentLoc, methodCC>;
-			
-			//iprintln("<method> - methodCC: <methodCC>");
-		}
-	}
-	
-	map[str,int] unitSizes = unitSize(locAndCC);
-	calculateUnitSizeRisk(unitSizes);
-	
-	map[str,int] unitCCs = unitCC(locAndCC);
-	calculateUnitCCRisk(unitCCs);
+			return methodCC;
 }
 
 public int countAndOr(Expression expression) {
@@ -111,6 +117,17 @@ public int countAndOr(Expression expression) {
 	};
 	
 	return expressionCC; 
+}
+
+public rel[loc, Statement] allMethods(set[Declaration] decls){
+	results = {};
+	visit(decls){
+		case m: \method(_,_,_,_, Statement s):
+			results += <m@src, s>;
+		case c: \constructor(_,_,_, Statement s):
+			results += <c@src, s>;
+	}
+	return results; 
 }
 
 public map[str, int] unitSize(list[tuple[int,int]] unitSizes) {
