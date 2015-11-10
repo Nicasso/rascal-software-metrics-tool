@@ -21,7 +21,7 @@ public list[loc] allFiles;
 
 //public loc currentProject = |project://smallsql0.21_src|;
 //public loc currentProject = |project://hsqldb-2.3.1|;
-public loc currentProject = |project://Test_Java_Project|;
+public loc currentProject = |project://TestProject|;
 
 public void begin() {
 	println("Let\'s begin!");

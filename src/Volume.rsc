@@ -44,11 +44,7 @@ public map[str,int] countVolume(list[loc] allLocations) {
 			} else if (commentBlock || startsWith(trim(line),"/") || startsWith(trim(line),"*")) {
 				values["comment"] += 1;
 			} else {
-				str regexLine = replaceAll(trim(line)," ", "");
-				//iprintln(regexLine);
-				//iprintln(rexpMatch(regexLine, "(\u0022|\u0027)(.*)([;{}]?[/][*]+)(.*)(\u0022|\u0027)"));
-				
-				if (endsWith(trim(line),"/*") || (rexpMatch(regexLine, "/(.*)([;{}][/][*]+)(.*)/") && !rexpMatch(regexLine, "/(\"|\')(.*)([;{}][/][*]+)(.*)(\"|\')/"))) {
+				if (endsWith(trim(line),"/*")) {
 					commentBlock = true;
 				}
 				values["code"] += 1;
