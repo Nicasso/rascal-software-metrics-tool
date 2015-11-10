@@ -9,12 +9,13 @@ import List;
 import Tuple;
 import String;
 import Relation;
+import Prelude;
 import util::Math;
 import demo::common::Crawl;
 
-rel[loc,int,list[str]] duplications;
+rel[list[str],loc,int] duplications = {};
 
-rel[loc,int,list[str]] allPossibleLineBlocks;
+rel[list[str],loc,int] allPossibleLineBlocks = {};
 
 public void calculateDuplication(set[loc] allLocations) {
 
@@ -37,9 +38,16 @@ public void calculateDuplication(set[loc] allLocations) {
 				sixLines = drop(1, sixLines);
 				sixLines += line;
 				
-				//allPossibleLineBlocks += {currentLocation, currentLine, sixLines};
+				allPossibleLineBlocks += {<sixLines, currentLocation, currentLine>};
 			}
 		}
 	}
+	
+	//iprintln(allPossibleLineBlocks);
+	
+	lrel[list[str],loc,int] dups = [ <x,y,z> | <x,y,z> <- allPossibleLineBlocks, size(allPossibleLineBlocks[x]) > 1];
+	
+	iprintln(dups);
+	
 
 }
