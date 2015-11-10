@@ -12,12 +12,33 @@ import Relation;
 import util::Math;
 import demo::common::Crawl;
 
-public void calculateDuplication(list[loc] allLocations) {
+rel[loc,int,list[str]] duplications;
+
+rel[loc,int,list[str]] allPossibleLineBlocks;
+
+public void calculateDuplication(set[loc] allLocations) {
+
+	duplications = {};
+	allPossibleLineBlocks = {};
 
 	for (currentLocation <- allLocations) {
+		list[str] sixLines = [];
+		int i = 0;
+		int currentLine = 1;
+		
 		for (line <- readFileLines(currentLocation)) {
 			line = trim(line);
-			iprintln(line);
+			currentLine += 1;
+			
+			if( i < 6) {
+				sixLines += line;
+				i += 1;
+			} else {
+				sixLines = drop(1, sixLines);
+				sixLines += line;
+				
+				//allPossibleLineBlocks += {currentLocation, currentLine, sixLines};
+			}
 		}
 	}
 

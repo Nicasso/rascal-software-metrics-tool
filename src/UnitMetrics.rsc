@@ -89,7 +89,7 @@ public int computeCC(Statement statement) {
 				}
 				case \for(list[Expression] initializers, list[Expression] updaters, Statement body): {
 					// @TODO ALSO ADD countAndOr HERE FOR THE ENTIRE LIST OF EXPRESSIONS?
-					methodCC += updaters;
+					methodCC += 1;
 				}
 				case \catch(Declaration exception, Statement body): {
 					methodCC += 1;
