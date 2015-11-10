@@ -41,3 +41,4 @@ public void begin() {
 
 public list[loc] getAllJavaFiles() {
 	return crawl(currentProject, ".java");
+}
