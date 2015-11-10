@@ -36,7 +36,7 @@ public void begin() {
 	calculateUnitMetrics(allMethods(decls));
 	UnitMetrics::printResults();
 	
-	//calculateDuplication();
+	calculateDuplication(Calculate::allFiles);
 }
 
 public list[loc] getAllJavaFiles() {

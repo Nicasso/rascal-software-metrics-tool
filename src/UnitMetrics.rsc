@@ -55,7 +55,7 @@ public void calculateUnitMetrics(rel[loc, Statement] myMethods) {
 			//iprintln("<method> - methodCC: <methodCC>");
 		}
 	//}
-	iprintln(locAndCC);
+	//iprintln(locAndCC);
 	map[str,int] unitSizes = unitSize(locAndCC);
 	calculateUnitSizeRisk(unitSizes);
 	
