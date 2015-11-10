@@ -17,7 +17,7 @@ rel[list[str],loc,int] duplications = {};
 
 rel[list[str],loc,int] allPossibleLineBlocks = {};
 
-public void calculateDuplication(set[loc] allLocations) {
+public void calculateDuplication(list[loc] allLocations) {
 
 	duplications = {};
 	allPossibleLineBlocks = {};

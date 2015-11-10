@@ -100,9 +100,6 @@ public int computeCC(Statement statement) {
 				case \continue(str label): {
 					methodCC += 1;
 				}
-				case \do(Statement body, Expression condition): {
-					methodCC += countAndOr(condition);
-				}
 			};
 			return methodCC;
 }
