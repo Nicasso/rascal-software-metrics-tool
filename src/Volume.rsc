@@ -44,6 +44,9 @@ public map[str,int] countVolume(list[loc] allLocations) {
 			} else if (commentBlock || startsWith(trim(line),"/") || startsWith(trim(line),"*")) {
 				values["comment"] += 1;
 			} else {
+				if (endsWith(trim(line),"/*")) {
+					commentBlock = true;
+				}
 				values["code"] += 1;
 			}
 		}
