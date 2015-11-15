@@ -11,20 +11,44 @@ import String;
 import Relation;
 import util::Math;
 import demo::common::Crawl;
+import DateTime;
+import Calculate;
 
 public str volumeRank;
 
-public map[str,int] countVolume(list[loc] allLocations) {
+/**
+ *	Counts the total ammount of comments for the whole software project.
+ */
+public int countTotalComments(M3 currentSoftware) {
+
+	comments = [ e | e <- currentSoftware@documentation];
+	
+	int total = 0;
+	
+	for (comment <- comments) {
+		for (line <- readFileLines(comment[1])) {		
+			total+=1;
+		}
+	}
+	
+	return total;
+}
+
+/**
+ * Counts the total amount of blank lines, comment lines, code lines, and total lines for the current software project.
+ */
+public map[str,int] countVolume(M3 currentProject) {	
+	int commentCount = countTotalComments(currentProject);
+	
+	list[loc] allLocations = getAllJavaFiles();
 
 	map[str,int] values = ();
 	
 	values["code"] = 0;
-	values["comment"] = 0;
+	values["comment"] = commentCount;
 	values["blank"] = 0;
 	values["total"] = 0;
-	
-	bool commentBlock = false;
-	
+		
 	for (currentLocation <- allLocations) {
 	
 		for (line <- readFileLines(currentLocation)) {
@@ -33,31 +57,30 @@ public map[str,int] countVolume(list[loc] allLocations) {
 		
 			if (trim(line) == "") {
 				values["blank"] += 1;
-			} else if (startsWith(trim(line),"/*")) {
-				if (!endsWith(trim(line),"*/")) {
-					commentBlock = true;
-				}
-				values["comment"] += 1;
-			} else if (startsWith(trim(line),"*/") || endsWith(trim(line),"*/")) {
-				commentBlock = false;
-				values["comment"] += 1;
-			} else if (commentBlock || startsWith(trim(line),"/") || startsWith(trim(line),"*")) {
-				values["comment"] += 1;
 			} else {
-				if (endsWith(trim(line),"/*")) {
-					commentBlock = true;
-				}
 				values["code"] += 1;
 			}
 		}
 	
 	}
 	
+	values["code"] = values["code"] - commentCount;
+	
 	calculateVolumeRank(values["code"]);
 	
 	return values;
 }
 
+/**
+ * Retreives a list with locations for all the .java files in the given software project.
+ */
+public list[loc] getAllJavaFiles() {
+	return crawl(Calculate::currentProject, ".java");
+}
+
+/**
+ * Calculates the overall rank for the LOC metric using the given threshold.
+ */
 private void calculateVolumeRank(int linesOfCode) {
 	if (0 < linesOfCode && linesOfCode <= 66000) {
 		Volume::volumeRank = "++";
@@ -72,13 +95,16 @@ private void calculateVolumeRank(int linesOfCode) {
 	}
 }
 
+/**
+ * Prints all the calculated volume metrics.
+ */
 public void printResults(map[str,int] values) {
 	println("Volume");
 	println();
-	println("Lines of code for the whole project: <values["code"]>");   
-   	println("Lines of comments for the whole project: <values["comment"]>");
-   	println("Total amount of blank lines for the whole project: <values["blank"]>");
-   	println("Total amount of lines for the whole project: <values["total"]>");
+	println("LOC: <values["code"]>");   
+   	println("Comments: <values["comment"]>");
+   	println("Blanks: <values["blank"]>");
+   	println("Total: <values["total"]>");
    	println();	
 	println("Volume Rating: <Volume::volumeRank>");
 	println();

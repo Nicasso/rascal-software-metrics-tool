@@ -15,49 +15,41 @@ import String;
 import Relation;
 import util::Math;
 import demo::common::Crawl;
+import DateTime;
 
 public M3 software;
-public list[loc] allFiles;
 
-public loc currentProject = |project://smallsql0.21_src|;
-//public loc currentProject = |project://hsqldb-2.3.1|;
+//public loc currentProject = |project://smallsql0.21_src|;
+public loc currentProject = |project://hsqldb-2.3.1|;
 //public loc currentProject = |project://TestProject|;
 
+/**
+ * The starting point which initializes all metric calculations.
+ */
 public void begin() {
 	println("Let\'s begin!");
+	
+	println(printTime(now(), "HH:mm:ss"));
    
 	Calculate::software = createM3FromEclipseProject(currentProject);
-	Calculate::allFiles = getAllJavaFiles();
-   
-   	map[str, int] projectVolumeValues = countVolume(Calculate::allFiles);
+    
+   	map[str, int] projectVolumeValues = countVolume(Calculate::software);
    	Volume::printResults(projectVolumeValues);
    	
-   	set[Declaration] decls = createAstsFromEclipseProject(currentProject, true);
-	calculateUnitMetrics(allMethods(decls));
+   	println(printTime(now(), "HH:mm:ss"));
+	
+	calculateUnitMetrics(Calculate::software);
 	UnitMetrics::printResults();
+	
+	println(printTime(now(), "HH:mm:ss"));
 	
 	allClasses = classes(Calculate::software);
 	int totalDupLOC = calculateDuplication(allClasses);
 	
-	int dupPercent = percent(totalDupLOC, projectVolumeValues["total"]);
+	int dupPercentage = calculateDuplicatePercentage(totalDupLOC, projectVolumeValues["total"]);
+	str dupRank = calculateDuplicateRating(dupPercentage);
 	
-	str dupRank;
+	Duplication::printResults(dupPercentage, dupRank);
 	
-	if (dupPercent > 0 && dupPercent <= 3) {
-		dupRank = "++";
-	} else if (dupPercent > 3 && dupPercent <= 5) {
-		dupRank = "+";
-	} else if (dupPercent > 5 && dupPercent <= 10) {
-		dupRank = "o";
-	} else if (dupPercent > 10 && dupPercent <= 20) {
-		dupRank = "-";
-	} else if (dupPercent > 20 && dupPercent <= 100) {
-		dupRank = "--";
-	}
-	
-	Duplication::printResults(dupPercent, dupRank);
-}
-
-public list[loc] getAllJavaFiles() {
-	return crawl(currentProject, ".java");
+	println(printTime(now(), "HH:mm:ss"));
 }

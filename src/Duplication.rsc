@@ -14,9 +14,11 @@ import util::Math;
 import demo::common::Crawl;
 
 rel[list[str],loc,int] duplications = {};
-
 rel[list[str],loc,int] allPossibleLineBlocks = {};
 
+/**
+ * Calculate the amount of duplicate lines present in the given software project.
+ */
 public int calculateDuplication(set[loc] allLocations) {
 
 	duplications = {};
@@ -43,52 +45,70 @@ public int calculateDuplication(set[loc] allLocations) {
 		}
 	}
 	
-	//iprintln(allPossibleLineBlocks);
-	
 	lrel[loc,int,list[str]] dups = [ <y,z,x> | <x,y,z> <- allPossibleLineBlocks, size(allPossibleLineBlocks[x]) > 1];
 	
 	dups = sort(dups);
-	
-	//iprintln(dups);
-	
-	//lrel[loc,int] longDups = [ <x,y,z> | <x,y,z> <- dups, size(dups[x]) > 1];
-	
-	//iprintln([ dups[x] | <x,y> <- dups, size(dups[x]) > 1]);
 	
 	totalDupLines = 0;
 	dupLines = 6;
 	
 	for (singleDup <- dups) {
 		tuple[loc,int,list[str]] nextDup = <singleDup[0],singleDup[1]+1,singleDup[2]>;
-		//iprintln(nextDup);
 		bool found = findLongerDups(dups, nextDup);
+
 		if (found) {
 			dupLines += 1;
 		} else {
-			//iprintln("DUPLINES <dupLines>");
 			totalDupLines += dupLines;
 			dupLines = 6;
 		}
 	}
 	
-	//iprintln("TOTALDUPSLINES <totalDupLines>");
 	return totalDupLines;
 }
 
+/**
+ * Finds out if the duplicate is longer than the amount of lines we found so far.
+ */
 public bool findLongerDups(lrel[loc,int,list[str]] dups, tuple[loc,int,list[str]] dupToFind) {
 	for (singleDup <- dups) {
-		if(singleDup[0] == dupToFind[0] && singleDup[1] == dupToFind[1]) {
+		if (singleDup[0] == dupToFind[0] && singleDup[1] == dupToFind[1]) {
 			return true;
 		}
 	}
 	return false;
 }
 
+public int calculateDuplicatePercentage(int totalDupLOC, int totalLOC) {
+	return percent(totalDupLOC, totalLOC);
+}
+
+public str calculateDuplicateRating(int dupPercent) {
+	str dupRank;
+	
+	if (dupPercent > 0 && dupPercent <= 3) {
+		dupRank = "++";
+	} else if (dupPercent > 3 && dupPercent <= 5) {
+		dupRank = "+";
+	} else if (dupPercent > 5 && dupPercent <= 10) {
+		dupRank = "o";
+	} else if (dupPercent > 10 && dupPercent <= 20) {
+		dupRank = "-";
+	} else if (dupPercent > 20 && dupPercent <= 100) {
+		dupRank = "--";
+	}
+	
+	return dupRank;
+}
+
+/**
+ * Prints the duplication percentage and rank for the given software project.
+ */ 
 public void printResults(int totalDupPercentage, str duplicationRank) {
 	println("Duplication");
 	println();
 	println("Duplication: <totalDupPercentage>%"); 
    	println();	
-	println("Duplication rank: <duplicationRank>");
+	println("Duplication Rating	: <duplicationRank>");
 	println();
 }

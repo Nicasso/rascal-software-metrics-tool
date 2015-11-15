@@ -27,35 +27,33 @@ public int mediumRiskUnitCC;
 public int highRiskUnitCC;
 public int veryHighRiskUnitCC;
 
-public void calculateUnitMetrics(rel[loc, Statement] myMethods) {
-	// Get all classes so we can access all methods.
-   	//allClasses = classes(currentSoftware);
+/**
+ * Calculates the unit size and unit complexity metrics.
+ */
+public void calculateUnitMetrics(M3 currentSoftware) {
+   	
+   	set[loc] allClasses = classes(currentSoftware);
    	   	
    	list[tuple[int,int]] locAndCC = [];
    	
-   	//int i = 0;
-   	// Loop through all classes.
-	//for (currentClass <- allClasses) {
-		// Get all methods and constructors per class. @TODO DO WE ALSO NEED TO CALCULATE CONSTRUCTORS?
-		//myMethods = [ e | e <- currentSoftware@containment[currentClass], e.scheme == "java+method" || e.scheme == "java+constructor"];
+	for (currentClass <- allClasses) {
+		myMethods = [ e | e <- currentSoftware@containment[currentClass], e.scheme == "java+method" || e.scheme == "java+constructor"];
    		
-   		// Calculate the lines of code for every method.
 		for (method <- myMethods) {
-			list[loc] tmp = [];
-			tmp = tmp + [method[0]]; 
-			int currentLoc = countVolume(tmp)["code"];
-			int methodCC = computeCC(method[1]);
+			//iprintln([ e | e <- currentSoftware@documentation]);
 			
-			//methodAST = getMethodASTEclipse(method, model = currentSoftware);
+			int currentLoc = countMethodLoc(method)["code"];
 			
+			Declaration methodAST = getMethodASTEclipse(method, model = currentSoftware);
 			
+			int methodCC = computeCC(methodAST);
 			
 			locAndCC += <currentLoc, methodCC>;
 			
-			//iprintln("<method> - methodCC: <methodCC>");
+			//iprintln("<method> - LOC: <currentLoc> - methodCC: <methodCC>");
 		}
-	//}
-	//iprintln(locAndCC);
+	}
+	
 	map[str,int] unitSizes = unitSize(locAndCC);
 	calculateUnitSizeRisk(unitSizes);
 	
@@ -63,47 +61,92 @@ public void calculateUnitMetrics(rel[loc, Statement] myMethods) {
 	calculateUnitCCRisk(unitCCs);
 }
 
-public int computeCC(Statement statement) {
-	int methodCC = 1;
-			
-			//iprintln(methodAST);
-			
-			visit (statement) {
-				case \if(Expression condition, Statement thenBranch): {
-					methodCC += countAndOr(condition);
-				}
-				case \if(Expression condition, Statement thenBranch, Statement elseBranch): {
-					methodCC += countAndOr(condition);
-				}
-				case \case(Expression expression): {
-					methodCC += 1;
-				}
-				case \while(Expression condition, Statement body): {
-					methodCC += countAndOr(condition);
-				}
-				case \foreach(Declaration parameter, Expression collection, Statement body): {
-					methodCC += 1;
-				}
-				case \for(list[Expression] initializers, Expression condition, list[Expression] updaters, Statement body): {
-					methodCC += countAndOr(condition);
-				}
-				case \for(list[Expression] initializers, list[Expression] updaters, Statement body): {
-					// @TODO ALSO ADD countAndOr HERE FOR THE ENTIRE LIST OF EXPRESSIONS?
-					methodCC += 1;
-				}
-				case \catch(Declaration exception, Statement body): {
-					methodCC += 1;
-				}
-				case \continue(): {
-					methodCC += 1;
-				}
-				case \continue(str label): {
-					methodCC += 1;
-				}
-			};
-			return methodCC;
+/**
+ * Calculates the LOC for a certain method, it uses string matching to filter out the comments.
+ */
+public map[str,int] countMethodLoc(loc method) {
+
+	map[str,int] values = ();
+	
+	values["code"] = 0;
+	values["comment"] = 0;
+	values["blank"] = 0;
+	values["total"] = 0;
+	
+	bool commentBlock = false;
+	
+	for (line <- readFileLines(method)) {
+	
+		values["total"] += 1;
+	
+		if (trim(line) == "") {
+			values["blank"] += 1;
+		} else if (startsWith(trim(line),"/*")) {
+			if (!endsWith(trim(line),"*/")) {
+				commentBlock = true;
+			}
+			values["comment"] += 1;
+		} else if (startsWith(trim(line),"*/") || endsWith(trim(line),"*/")) {
+			commentBlock = false;
+			values["comment"] += 1;
+		} else if (commentBlock || startsWith(trim(line),"/") || startsWith(trim(line),"*")) {
+			values["comment"] += 1;
+		} else {
+			if (endsWith(trim(line),"/*")) {
+				commentBlock = true;
+			}
+			values["code"] += 1;
+		}
+	}
+	
+	return values;
 }
 
+/**
+ * Computes the Cyclomatic complexity for a method based on its AST.
+ */
+public int computeCC(Declaration statement) {
+	int methodCC = 1;
+				
+	visit (statement) {
+		case \if(Expression condition, Statement thenBranch): {
+			methodCC += countAndOr(condition);
+		}
+		case \if(Expression condition, Statement thenBranch, Statement elseBranch): {
+			methodCC += countAndOr(condition);
+		}
+		case \case(Expression expression): {
+			methodCC += 1;
+		}
+		case \while(Expression condition, Statement body): {
+			methodCC += countAndOr(condition);
+		}
+		case \foreach(Declaration parameter, Expression collection, Statement body): {
+			methodCC += 1;
+		}
+		case \for(list[Expression] initializers, Expression condition, list[Expression] updaters, Statement body): {
+			methodCC += countAndOr(condition);
+		}
+		case \for(list[Expression] initializers, list[Expression] updaters, Statement body): {
+			// @TODO ALSO ADD countAndOr HERE FOR THE ENTIRE LIST OF EXPRESSIONS?
+			methodCC += 1;
+		}
+		case \catch(Declaration exception, Statement body): {
+			methodCC += 1;
+		}
+		case \continue(): {
+			methodCC += 1;
+		}
+		case \continue(str label): {
+			methodCC += 1;
+		}
+	};
+	return methodCC;
+}
+
+/**
+ * Counts the amount of "&&" and "||" operators within a condition.
+ */
 public int countAndOr(Expression expression) {
 	int expressionCC = 1;
 	
@@ -119,17 +162,9 @@ public int countAndOr(Expression expression) {
 	return expressionCC; 
 }
 
-public rel[loc, Statement] allMethods(set[Declaration] decls){
-	results = {};
-	visit(decls){
-		case m: \method(_,_,_,_, Statement s):
-			results += <m@src, s>;
-		case c: \constructor(_,_,_, Statement s):
-			results += <c@src, s>;
-	}
-	return results; 
-}
-
+/**
+ * Orders the unit sizes in their related risk categories.
+ */
 public map[str, int] unitSize(list[tuple[int,int]] unitSizes) {
 	
 	map[str, int] values = ();
@@ -159,6 +194,9 @@ public map[str, int] unitSize(list[tuple[int,int]] unitSizes) {
 	return values;
 }
 
+/**
+ * Orders the unit complexities in their related risk categories.
+ */
 public map[str, int] unitCC(list[tuple[int,int]] unitSizes) {
 	
 	map[str, int] values = ();
@@ -189,6 +227,9 @@ public map[str, int] unitCC(list[tuple[int,int]] unitSizes) {
 	return values;
 }
 
+/**
+ * Calculates the overall risk based on the unit sizes. 
+ */
 public void calculateUnitSizeRisk(map[str,int] unitResults) {
 	UnitMetrics::lowRiskUnitSize = percent(unitResults["low"], unitResults["total"]);
 	UnitMetrics::mediumRiskUnitSize = percent(unitResults["medium"], unitResults["total"]);
@@ -208,6 +249,9 @@ public void calculateUnitSizeRisk(map[str,int] unitResults) {
 	}
 }
 
+/**
+ * Calculates the overall risk based on the unit complexities. 
+ */
 public void calculateUnitCCRisk(map[str,int] unitResults) {
 	UnitMetrics::lowRiskUnitCC = percent(unitResults["low"], unitResults["total"]);
 	UnitMetrics::mediumRiskUnitCC = percent(unitResults["medium"], unitResults["total"]);
@@ -227,6 +271,9 @@ public void calculateUnitCCRisk(map[str,int] unitResults) {
 	}
 }
 
+/**
+ * Prints the results for the unit size and unit compelxity. 
+ */
 public void printResults() {
 	println("Unit Size");
 	println();
