@@ -51,9 +51,9 @@ public void begin() {
 	println(printTime(now(), "HH:mm:ss"));
 	
 	allClasses = classes(Calculate::software);
-	int totalDupLOC = calculateDuplication(allClasses);
-	
-	int dupPercentage = calculateDuplicatePercentage(totalDupLOC, projectVolumeValues["total"]);
+	map[str,int] duplicateValues = calculateDuplication(allClasses);
+		
+	int dupPercentage = calculateDuplicatePercentage(duplicateValues["duplicates"], duplicateValues["total"]);
 	dupRank = calculateDuplicateRating(dupPercentage);
 	
 	Duplication::printResults(dupPercentage, dupRank);

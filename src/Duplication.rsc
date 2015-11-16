@@ -18,9 +18,11 @@ rel[list[str],loc,int] allPossibleLineBlocks = {};
 /**
  * Calculate the amount of duplicate lines present in the given software project.
  */
-public int calculateDuplication(set[loc] allLocations) {
+public map[str,int] calculateDuplication(list[loc] allLocations) {
 
 	allPossibleLineBlocks = {};
+	
+	int totalLines = 0;
 
 	for (currentLocation <- allLocations) {
 		list[str] sixLines = [];
@@ -40,6 +42,8 @@ public int calculateDuplication(set[loc] allLocations) {
 				
 				allPossibleLineBlocks += {<sixLines, currentLocation, currentLine-6>};
 			}
+			
+			totalLines += 1;
 		}
 	}
 	
@@ -62,7 +66,12 @@ public int calculateDuplication(set[loc] allLocations) {
 		}
 	}
 	
-	return totalDupLines;
+	
+	map[str,int] values = ();
+	values["duplicates"] = totalDupLines;
+	values["total"] = totalLines;
+	
+	return values;
 }
 
 /**

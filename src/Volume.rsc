@@ -41,7 +41,7 @@ public map[str,int] countVolume(M3 currentProject) {
 	int commentCount = countTotalComments(currentProject);
 	
 	list[loc] allLocations = getAllJavaFiles();
-
+	
 	map[str,int] values = ();
 	
 	values["code"] = 0;
@@ -52,7 +52,7 @@ public map[str,int] countVolume(M3 currentProject) {
 	for (currentLocation <- allLocations) {
 	
 		for (line <- readFileLines(currentLocation)) {
-		
+				
 			values["total"] += 1;
 		
 			if (trim(line) == "") {
