@@ -18,7 +18,7 @@ rel[list[str],loc,int] allPossibleLineBlocks = {};
 /**
  * Calculate the amount of duplicate lines present in the given software project.
  */
-public map[str,int] calculateDuplication(list[loc] allLocations) {
+public map[str,int] calculateDuplication(set[loc] allLocations) {
 
 	allPossibleLineBlocks = {};
 	
@@ -33,7 +33,7 @@ public map[str,int] calculateDuplication(list[loc] allLocations) {
 			line = trim(line);
 			currentLine += 1;
 			
-			if(i < 6) {
+			if (i < 6) {
 				sixLines += line;
 				i += 1;
 			} else {
@@ -54,14 +54,27 @@ public map[str,int] calculateDuplication(list[loc] allLocations) {
 	totalDupLines = 0;
 	dupLines = 6;
 	
+	list[list[str]] alreadyFound = [];
+	
 	for (singleDup <- dups) {
+	
+		iprintln(singleDup);
+	
 		tuple[loc,int,list[str]] nextDup = <singleDup[0],singleDup[1]+1,singleDup[2]>;
 		bool found = findLongerDups(dups, nextDup);
 
 		if (found) {
 			dupLines += 1;
 		} else {
-			totalDupLines += dupLines;
+			// totalDupLines += dupLines;
+			
+			// Does this work?
+			if (singleDup[2] in alreadyFound) {
+				totalDupLines += dupLines;
+			} else {
+				alreadyFound += [singleDup[2]]; 
+			}
+			
 			dupLines = 6;
 		}
 	}
