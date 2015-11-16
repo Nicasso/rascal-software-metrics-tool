@@ -291,4 +291,6 @@ public void printResults() {
 	println();
 	
 	println("Unit Complexity Rating: <UnitMetrics::unitCCScore>");  
+	
+	println();
 }

@@ -84,7 +84,7 @@ public int calculateDuplicatePercentage(int totalDupLOC, int totalLOC) {
 public str calculateDuplicateRating(int dupPercent) {
 	str dupRank;
 	
-	if (dupPercent > 0 && dupPercent <= 3) {
+	if (dupPercent >= 0 && dupPercent <= 3) {
 		dupRank = "++";
 	} else if (dupPercent > 3 && dupPercent <= 5) {
 		dupRank = "+";
@@ -107,6 +107,6 @@ public void printResults(int totalDupPercentage, str duplicationRank) {
 	println();
 	println("Duplication: <totalDupPercentage>%"); 
    	println();	
-	println("Duplication Rating	: <duplicationRank>");
+	println("Duplication Rating: <duplicationRank>");
 	println();
 }
