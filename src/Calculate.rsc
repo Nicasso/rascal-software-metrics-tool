@@ -66,11 +66,11 @@ public void begin() {
 
 
 public void calculateSummary(){
-	analyzabilityScore = (rankToInt(Volume::volumeRank) + rankToInt(UnitMetrics::unitSizeScore) + rankToInt(Calculate::dupRank)) / 3.;
-	changeabilityScore = (rankToInt(UnitMetrics::unitCCScore) + rankToInt(Calculate::dupRank)) / 2.;
+	analyzabilityScore = (rankToInt(Volume::volumeRank) + rankToInt(UnitMetrics::unitSizeScore) + rankToInt(Calculate::dupRank)) / 3. + 0.00;
+	changeabilityScore = (rankToInt(UnitMetrics::unitCCScore) + rankToInt(Calculate::dupRank)) / 2. + 0.00;
 	stabilityScore = "not applicable";
-	testabilityScore = (rankToInt(UnitMetrics::unitCCScore) + rankToInt(UnitMetrics::unitSizeScore)) / 2.;
-	maintainabilityScore = (analyzabilityScore + changeabilityScore + testabilityScore) / 3.;
+	testabilityScore = (rankToInt(UnitMetrics::unitCCScore) + rankToInt(UnitMetrics::unitSizeScore)) / 2. + 0.00;
+	maintainabilityScore = (analyzabilityScore + changeabilityScore + testabilityScore) / 3. + 0.00;
 	printSummary();
 }
 
