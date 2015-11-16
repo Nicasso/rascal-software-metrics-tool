@@ -128,16 +128,9 @@ public int computeCC(Declaration statement) {
 			methodCC += countAndOr(condition);
 		}
 		case \for(list[Expression] initializers, list[Expression] updaters, Statement body): {
-			// @TODO ALSO ADD countAndOr HERE FOR THE ENTIRE LIST OF EXPRESSIONS?
 			methodCC += 1;
 		}
 		case \catch(Declaration exception, Statement body): {
-			methodCC += 1;
-		}
-		case \continue(): {
-			methodCC += 1;
-		}
-		case \continue(str label): {
 			methodCC += 1;
 		}
 	};
