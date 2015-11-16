@@ -234,7 +234,7 @@ public void calculateUnitSizeRisk(map[str,int] unitResults) {
 	} else if (mediumRiskUnitSize <= 30 && highRiskUnitSize == 5 && veryHighRiskUnitSize == 0) {
 		UnitMetrics::unitSizeScore = "+";
 	} else if (mediumRiskUnitSize <= 40 && highRiskUnitSize == 10 && veryHighRiskUnitSize == 0) {
-		UnitMetrics::unitSizeScore = "0";
+		UnitMetrics::unitSizeScore = "o";
 	} else if (mediumRiskUnitSize <= 50 && highRiskUnitSize == 15 && veryHighRiskUnitSize == 5) {
 		UnitMetrics::unitSizeScore = "-";
 	} else {
@@ -256,7 +256,7 @@ public void calculateUnitCCRisk(map[str,int] unitResults) {
 	} else if (mediumRiskUnitCC <= 30 && highRiskUnitCC <= 5 && veryHighRiskUnitCC == 0) {
 		UnitMetrics::unitCCScore = "+";
 	} else if (mediumRiskUnitCC <= 40 && highRiskUnitCC <= 10 && veryHighRiskUnitCC == 0) {
-		UnitMetrics::unitCCScore = "0";
+		UnitMetrics::unitCCScore = "o";
 	} else if (mediumRiskUnitCC <= 50 && highRiskUnitCC <= 15 && veryHighRiskUnitCC <= 5) {
 		UnitMetrics::unitCCScore = "-";
 	} else {

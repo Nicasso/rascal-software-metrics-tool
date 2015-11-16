@@ -87,7 +87,7 @@ private void calculateVolumeRank(int linesOfCode) {
 	} else if (66000 < linesOfCode && linesOfCode <= 246000) {
 		Volume::volumeRank = "+";
 	} else if (246000 < linesOfCode && linesOfCode <= 665000) {
-		Volume::volumeRank = "0";
+		Volume::volumeRank = "o";
 	} else if (665000 < linesOfCode && linesOfCode <= 1310000) {
 		Volume::volumeRank = "-";
 	} else {

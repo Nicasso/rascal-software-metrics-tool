@@ -17,10 +17,17 @@ import util::Math;
 import demo::common::Crawl;
 import DateTime;
 
-public M3 software;
+public real analyzabilityScore;
+public real changeabilityScore;
+public str stabilityScore;
+public real testabilityScore;
+public real maintainabilityScore;
 
-//public loc currentProject = |project://smallsql0.21_src|;
-public loc currentProject = |project://hsqldb-2.3.1|;
+public M3 software;
+public str dupRank;
+
+public loc currentProject = |project://smallsql0.21_src|;
+//public loc currentProject = |project://hsqldb-2.3.1|;
 //public loc currentProject = |project://TestProject|;
 
 /**
@@ -47,9 +54,56 @@ public void begin() {
 	int totalDupLOC = calculateDuplication(allClasses);
 	
 	int dupPercentage = calculateDuplicatePercentage(totalDupLOC, projectVolumeValues["total"]);
-	str dupRank = calculateDuplicateRating(dupPercentage);
+	dupRank = calculateDuplicateRating(dupPercentage);
 	
 	Duplication::printResults(dupPercentage, dupRank);
 	
 	println(printTime(now(), "HH:mm:ss"));
+	
+	calculateSummary();
+}
+
+
+
+public void calculateSummary(){
+	analyzabilityScore = (rankToInt(Volume::volumeRank) + rankToInt(UnitMetrics::unitSizeScore) + rankToInt(Calculate::dupRank)) / 3.;
+	changeabilityScore = (rankToInt(UnitMetrics::unitCCScore) + rankToInt(Calculate::dupRank)) / 2.;
+	stabilityScore = "not applicable";
+	testabilityScore = (rankToInt(UnitMetrics::unitCCScore) + rankToInt(UnitMetrics::unitSizeScore)) / 2.;
+	maintainabilityScore = (analyzabilityScore + changeabilityScore + testabilityScore) / 3.;
+	printSummary();
+}
+
+public int rankToInt(str rank){
+	switch(rank){
+		case "++": return 5;
+		case "+" : return 4;
+		case "o" : return 3;
+		case "-" : return 2;
+		case "--": return 1;
+	}
+}
+
+public str realToRank(real score){
+	if (score >= 4 && score <= 5) {
+		return "++";
+	} else if (score >= 3 && score < 4) {
+		return "+";
+	} else if (score >= 2 && score < 3) {
+		return "o";
+	} else if (score >= 1 && score < 2) {
+		return "-";
+	} else {
+		return "--";
+	}
+}
+
+public void printSummary(){
+	println("Summary");
+	println("----------------------------------------");
+	println("SIG Analyzability Score:   <realToRank(analyzabilityScore)> (<analyzabilityScore>)");
+	println("SIG Changeability Score:   <realToRank(changeabilityScore)> (<changeabilityScore>)");
+	println("SIG Stability Score:       <stabilityScore>");
+	println("SIG Testability Score:     <realToRank(testabilityScore)> (<testabilityScore>)");
+	println("SIG Maintainability Score: <realToRank(maintainabilityScore)> (<maintainabilityScore>)");
 }
