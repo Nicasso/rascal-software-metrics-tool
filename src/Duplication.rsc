@@ -13,7 +13,6 @@ import Prelude;
 import util::Math;
 import demo::common::Crawl;
 
-rel[list[str],loc,int] duplications = {};
 rel[list[str],loc,int] allPossibleLineBlocks = {};
 
 /**
@@ -21,7 +20,6 @@ rel[list[str],loc,int] allPossibleLineBlocks = {};
  */
 public int calculateDuplication(set[loc] allLocations) {
 
-	duplications = {};
 	allPossibleLineBlocks = {};
 
 	for (currentLocation <- allLocations) {
@@ -33,7 +31,7 @@ public int calculateDuplication(set[loc] allLocations) {
 			line = trim(line);
 			currentLine += 1;
 			
-			if( i < 6) {
+			if(i < 6) {
 				sixLines += line;
 				i += 1;
 			} else {
