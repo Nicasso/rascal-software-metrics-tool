@@ -22,12 +22,21 @@ public map[str,int] calculateDuplication(set[loc] allLocations) {
 
 	allPossibleLineBlocks = {};
 	
-	int totalLines = 0;
+	//int totalLines = 0;
+	
+	map[str,int] values = ();
+	
+	values["code"] = 0;
+	values["comment"] = 0;
+	values["blank"] = 0;
+	values["total"] = 0;
 
 	for (currentLocation <- allLocations) {
 		list[str] sixLines = [];
 		int i = 0;
 		int currentLine = 1;
+		
+		commentBlock = false;
 		
 		for (line <- readFileLines(currentLocation)) {
 			line = trim(line);
@@ -36,6 +45,9 @@ public map[str,int] calculateDuplication(set[loc] allLocations) {
 			if (i < 6) {
 				sixLines += line;
 				i += 1;
+			} else if (i == 6) {
+				allPossibleLineBlocks += {<sixLines, currentLocation, currentLine-6>};
+				i += 1;
 			} else {
 				sixLines = drop(1, sixLines);
 				sixLines += line;
@@ -43,22 +55,37 @@ public map[str,int] calculateDuplication(set[loc] allLocations) {
 				allPossibleLineBlocks += {<sixLines, currentLocation, currentLine-6>};
 			}
 			
-			totalLines += 1;
+			if (trim(line) == "") {
+				values["blank"] += 1;
+			} else if (startsWith(trim(line),"/*")) {
+				if (!endsWith(trim(line),"*/")) {
+					commentBlock = true;
+				}
+				values["comment"] += 1;
+			} else if (startsWith(trim(line),"*/") || endsWith(trim(line),"*/")) {
+				commentBlock = false;
+				values["comment"] += 1;
+			} else if (commentBlock || startsWith(trim(line),"/") || startsWith(trim(line),"*")) {
+				values["comment"] += 1;
+			} else {
+				if (endsWith(trim(line),"/*")) {
+					commentBlock = true;
+				}
+				values["code"] += 1;
+			}
+			
+			//totalLines += 1;
 		}
 	}
 	
 	lrel[loc,int,list[str]] dups = [ <y,z,x> | <x,y,z> <- allPossibleLineBlocks, size(allPossibleLineBlocks[x]) > 1];
 	
 	dups = sort(dups);
-	
+		
 	totalDupLines = 0;
 	dupLines = 6;
-	
-	list[list[str]] alreadyFound = [];
-	
+		
 	for (singleDup <- dups) {
-	
-		iprintln(singleDup);
 	
 		tuple[loc,int,list[str]] nextDup = <singleDup[0],singleDup[1]+1,singleDup[2]>;
 		bool found = findLongerDups(dups, nextDup);
@@ -66,25 +93,18 @@ public map[str,int] calculateDuplication(set[loc] allLocations) {
 		if (found) {
 			dupLines += 1;
 		} else {
-			// totalDupLines += dupLines;
-			
-			// Does this work?
-			if (singleDup[2] in alreadyFound) {
-				totalDupLines += dupLines;
-			} else {
-				alreadyFound += [singleDup[2]]; 
-			}
+			totalDupLines += dupLines;
 			
 			dupLines = 6;
 		}
 	}
 	
 	
-	map[str,int] values = ();
-	values["duplicates"] = totalDupLines;
-	values["total"] = totalLines;
-	
-	return values;
+	map[str,int] output = ();
+	output["duplicates"] = totalDupLines;
+	output["total"] = values["code"];
+		
+	return output;
 }
 
 /**
@@ -117,7 +137,7 @@ public str calculateDuplicateRating(int dupPercent) {
 	} else if (dupPercent > 20 && dupPercent <= 100) {
 		dupRank = "--";
 	}
-	
+		
 	return dupRank;
 }
 

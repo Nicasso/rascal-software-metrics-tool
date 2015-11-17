@@ -53,7 +53,7 @@ public void begin() {
 	allClasses = classes(Calculate::software);
 	map[str,int] duplicateValues = calculateDuplication(allClasses);
 		
-	int dupPercentage = calculateDuplicatePercentage(duplicateValues["duplicates"], projectVolumeValues["code"]);
+	int dupPercentage = calculateDuplicatePercentage(duplicateValues["duplicates"], duplicateValues["total"]);
 	dupRank = calculateDuplicateRating(dupPercentage);
 	
 	Duplication::printResults(dupPercentage, dupRank);
