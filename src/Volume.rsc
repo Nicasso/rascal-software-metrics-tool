@@ -99,13 +99,10 @@ private void calculateVolumeRank(int linesOfCode) {
  * Prints all the calculated volume metrics.
  */
 public void printResults(map[str,int] values) {
-	println("Volume");
 	println();
-	println("LOC: <values["code"]>");   
-   	println("Comments: <values["comment"]>");
-   	println("Blanks: <values["blank"]>");
-   	println("Total: <values["total"]>");
-   	println();	
-	println("Volume Rating: <Volume::volumeRank>");
+	println("Volume Report");
+	println("Lines of Code: <values["code"]>");
+	println("Comments/Blanks/Total: <values["comment"]> - <values["blank"]> - <values["total"]>");   
+	println("Volume Score: <Volume::volumeRank>");
 	println();
 }

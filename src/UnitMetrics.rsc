@@ -268,29 +268,23 @@ public void calculateUnitCCRisk(map[str,int] unitResults) {
  * Prints the results for the unit size and unit compelxity. 
  */
 public void printResults() {
-	println("Unit Size");
 	println();
-	
-	println("lowRisk: <UnitMetrics::lowRiskUnitSize>%");
-	println("mediumRisk: <UnitMetrics::mediumRiskUnitSize>%");
-	println("highRisk: <UnitMetrics::highRiskUnitSize>%");
-	println("veryHighRisk: <UnitMetrics::veryHighRiskUnitSize>%");	
-	println();	
-	println("Unit Size Rating: <UnitMetrics::unitSizeScore>");
-	
-	println();
-	
-	println("Unit complexity");
-	println();
-	
-	println("lowRisk: <UnitMetrics::lowRiskUnitCC>%");
-	println("mediumRisk: <UnitMetrics::mediumRiskUnitCC>%");
-	println("highRisk: <UnitMetrics::highRiskUnitCC>%");
-	println("veryHighRisk: <UnitMetrics::veryHighRiskUnitCC>%");	
+	println("Unit Size Report");	
+	println("Risk Profile (low/medium/high/very high): <lowRiskUnitSize>% - <mediumRiskUnitSize>% - <highRiskUnitSize>% - <veryHighRiskUnitSize>%");
+	//println("lowRisk: <UnitMetrics::lowRiskUnitSize>%");
+	//println("mediumRisk: <UnitMetrics::mediumRiskUnitSize>%");
+	//println("highRisk: <UnitMetrics::highRiskUnitSize>%");
+	//println("veryHighRisk: <UnitMetrics::veryHighRiskUnitSize>%");	
+	println("Unit Size Score: <UnitMetrics::unitSizeScore>");
 	
 	println();
 	
-	println("Unit Complexity Rating: <UnitMetrics::unitCCScore>");  
-	
+	println("Unit complexity Report");
+	println("Risk Profile (low/medium/high/very high): <lowRiskUnitCC>% - <mediumRiskUnitCC>% - <highRiskUnitCC>% - <veryHighRiskUnitCC>%");
+	//println("lowRisk: <UnitMetrics::lowRiskUnitCC>%");
+	//println("mediumRisk: <UnitMetrics::mediumRiskUnitCC>%");
+	//println("highRisk: <UnitMetrics::highRiskUnitCC>%");
+	//println("veryHighRisk: <UnitMetrics::veryHighRiskUnitCC>%");	
+	println("Unit Complexity Score: <UnitMetrics::unitCCScore>");  
 	println();
 }
