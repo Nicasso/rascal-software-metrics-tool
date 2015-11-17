@@ -30,17 +30,43 @@ public map[str,int] calculateDuplication(set[loc] allLocations) {
 	values["comment"] = 0;
 	values["blank"] = 0;
 	values["total"] = 0;
+	
+	commentBlock = false;
 
 	for (currentLocation <- allLocations) {
 		list[str] sixLines = [];
 		int i = 0;
 		int currentLine = 1;
 		
-		commentBlock = false;
-		
 		for (line <- readFileLines(currentLocation)) {
 			line = trim(line);
 			currentLine += 1;
+			
+			values["total"] += 1;
+			
+			if (trim(line) == "") {
+				values["blank"] += 1;
+				continue;
+			} else if (startsWith(trim(line),"/*")) {
+				if (!endsWith(trim(line),"*/")) {
+					commentBlock = true;
+				}
+				values["comment"] += 1;
+				continue;
+			} else if (startsWith(trim(line),"*/") || endsWith(trim(line),"*/")) {
+				commentBlock = false;
+				values["comment"] += 1;
+				continue;
+			} else if (commentBlock || startsWith(trim(line),"/") || startsWith(trim(line),"*")) {
+				values["comment"] += 1;
+				continue;
+			} else {
+				if (endsWith(trim(line),"/*")) {
+					commentBlock = true;
+					continue;
+				}
+				values["code"] += 1;
+			}
 			
 			if (i < 6) {
 				sixLines += line;
@@ -55,26 +81,6 @@ public map[str,int] calculateDuplication(set[loc] allLocations) {
 				allPossibleLineBlocks += {<sixLines, currentLocation, currentLine-6>};
 			}
 			
-			if (trim(line) == "") {
-				values["blank"] += 1;
-			} else if (startsWith(trim(line),"/*")) {
-				if (!endsWith(trim(line),"*/")) {
-					commentBlock = true;
-				}
-				values["comment"] += 1;
-			} else if (startsWith(trim(line),"*/") || endsWith(trim(line),"*/")) {
-				commentBlock = false;
-				values["comment"] += 1;
-			} else if (commentBlock || startsWith(trim(line),"/") || startsWith(trim(line),"*")) {
-				values["comment"] += 1;
-			} else {
-				if (endsWith(trim(line),"/*")) {
-					commentBlock = true;
-				}
-				values["code"] += 1;
-			}
-			
-			//totalLines += 1;
 		}
 	}
 	
@@ -98,6 +104,8 @@ public map[str,int] calculateDuplication(set[loc] allLocations) {
 		}
 	}
 	
+	//iprintln(values);
+	//iprintln("TOTAL DUP LINES: <totalDupLines>");
 	
 	map[str,int] output = ();
 	output["duplicates"] = totalDupLines;
