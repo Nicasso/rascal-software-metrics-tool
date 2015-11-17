@@ -86,7 +86,6 @@ public map[str,int] calculateDuplication(set[loc] allLocations) {
 	dupLines = 6;
 		
 	for (singleDup <- dups) {
-	
 		tuple[loc,int,list[str]] nextDup = <singleDup[0],singleDup[1]+1,singleDup[2]>;
 		bool found = findLongerDups(dups, nextDup);
 
@@ -145,10 +144,9 @@ public str calculateDuplicateRating(int dupPercent) {
  * Prints the duplication percentage and rank for the given software project.
  */ 
 public void printResults(int totalDupPercentage, str duplicationRank) {
-	println("Duplication");
 	println();
+	println("Duplication Report");
 	println("Duplication: <totalDupPercentage>%"); 
-   	println();	
-	println("Duplication Rating: <duplicationRank>");
+	println("Duplication Score: <duplicationRank>");
 	println();
 }
